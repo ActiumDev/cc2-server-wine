@@ -1,0 +1,12 @@
+[Unit]
+Description=Carrier Command 2 Dedicated Server
+AssertPathExists=%h/.wine/drive_c/CC2_server/dedicated_server.exe
+
+[Install]
+WantedBy=default.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.wine/drive_c/CC2_server
+Environment=WINEDLLOVERRIDES="explorer.exe=d;services.exe=d;wbemprox.dll=d"
+ExecStart=/usr/bin/wine %h/.wine/drive_c/CC2_server/dedicated_server.exe

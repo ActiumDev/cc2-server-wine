@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation: https://geometa.co.uk/wiki/carrier_command_2/view/dedicated_servers -->
+<data port="25565" max_players="4" server_name="Carrier Command 2 Dedicated Server" password="" save_name="slot_0" island_count="16" island_count_per_team="1" carrier_count_per_team="1" team_count_ai="1" team_count_human="1" base_difficulty="1" loadout_type="2" blueprints="2" game_data_path="rom_0">
+<!-- Description of data attributes:
+port: first of sequence of four consecutive UDP ports used by server
+game_data_path: path to `rom_0` relative to current working directory
+save_name: name of directory below `$working_dir/saved_games` containing a `save.xml` file (can be copied from client)
+blueprints:   0 -> default; 1 -> none;    2 -> all
+loadout_type: 0 -> default; 1 -> minimal; 2 -> complete
+-->
+	<permissions>
+		<!-- <peer steam_id="0" is_banned="false" is_admin="false" /> -->
+	</permissions>
+	<active_mod_folders>
+		<!-- <mod value="C:/path/to/mod_1" /> -->
+		<!-- <mod value="../relative/path/to/mod_2" /> -->
+	</active_mod_folders>
+</data>
