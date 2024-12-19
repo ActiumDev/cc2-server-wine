@@ -34,6 +34,9 @@ Edit the file to suit your needs.
 The config defaults to load a `save.xml` file placed in [`C:/CC2_server/saved_games/slot_0/`](.wine/drive_c/CC2_server/saved_games/slot_0/) if it exists.
 You can upload any `save.xml` file from your local CC2 installation.
 
+The [`modify_inventory.py`](.wine/drive_c/CC2_server/saved_games/modify_inventory.py) script can be used to change item counts in the player carrier inventory.
+Set the desired item counts by first editing the `item_ids_qtys` dictionary, then run the script on a save game of your choice (script will ask which).
+
 ## Running the Server
 
 Start the server as follows (preferably in a `screen`/`tmux` session).

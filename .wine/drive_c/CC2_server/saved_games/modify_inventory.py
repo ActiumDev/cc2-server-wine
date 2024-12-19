@@ -154,9 +154,11 @@ class CC2Savegame:
         self._file.replace(Path(f"{self._file}~"))
         self._file.write_bytes(str(self).encode("ascii"))
 
-# read savegame
+# read savegame (try relative path first, then %APPDATA% on Windows)
 slot = input("Enter savegame folder (e.g., 'slot_0'): ").rstrip()
-sav_file = Path(os.getenv("APPDATA"), "Carrier Command 2", "saved_games", slot, "save.xml")
+sav_file = Path(slot, "save.xml")
+if not sav_file.exists() and os.name == "nt" and os.getenv("APPDATA"):
+    sav_file = Path(os.getenv("APPDATA"), "Carrier Command 2", "saved_games", slot, "save.xml")
 sav = CC2Savegame(sav_file)
 print()
 
