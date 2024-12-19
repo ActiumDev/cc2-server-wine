@@ -47,8 +47,8 @@ WINEDLLOVERRIDES="explorer.exe=d;services.exe=d;wbemprox.dll=d" wine dedicated_s
 Note that when running on a headless server (no GUI), Wine will print error messages regarding the failure to open graphical windows (e.g., `0024:err:winediag:nodrv_CreateWindow Application tried to create a window, but no driver could be loaded.`).
 These errors can be ignored, as the CC2 `dedicated_server.exe` is a command line only program.
 
-To run the CC2 server as a background service, this repository includes a [systemd.service file](...).
-Note that you may need to [`loginctl enable-linger $USERNAME`](https://manpages.debian.org/bookworm/systemd/loginctl.1.en.html#User_Commands) as root to ensure the service is not terminated when the user logs out and that it is started automatically after bootup.
+To run the CC2 server as a background service, this repository includes a [systemd.service file](.config/systemd/user/cc2-server.service).
+Note that you may need to [`loginctl enable-linger $USERNAME`](https://manpages.debian.org/bookworm/systemd/loginctl.1.en.html#User_Commands) as root to ensure the service is not terminated when the user logs out and that the server will be started automatically after system boot.
 
 
 ## Known Issues
