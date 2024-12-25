@@ -3,10 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 import copy
-import os
 from pathlib import Path
 import re
-import sys
 import xml.etree.ElementTree as ET
 
 # item ids (extracted from v1.5.2) and target quantities for carrier inventory
@@ -154,56 +152,61 @@ class CC2Savegame:
         self._file.replace(Path(f"{self._file}~"))
         self._file.write_bytes(str(self).encode("ascii"))
 
-# read savegame (try relative path first, then %APPDATA% on Windows)
-slot = input("Enter savegame folder (e.g., 'slot_0'): ").rstrip()
-sav_file = Path(slot, "save.xml")
-if not sav_file.exists() and os.name == "nt" and os.getenv("APPDATA"):
-    sav_file = Path(os.getenv("APPDATA"), "Carrier Command 2", "saved_games", slot, "save.xml")
-sav = CC2Savegame(sav_file)
-print()
 
-# find player team id
-non_ai_teams = sav.root.findall('scene/teams/teams/t[@is_ai_controlled="false"]')
-if len(non_ai_teams) == 0:
-    raise RuntimeError("found zero player-controlled teams")
-elif len(non_ai_teams) > 1:
-    raise RuntimeError("found multiple player-controlled teams")
-else:
-    team_id = non_ai_teams[0].attrib["id"]
+if __name__ == "__main__":
+    import os
+    import sys
 
-# find player carrier vehicle id
-player_carriers = sav.root.findall(f'vehicles/vehicles/v[@definition_index="0"][@team_id="{team_id}"]')
-if len(player_carriers) == 0:
-    raise RuntimeError("found zero player-controlled carriers")
-elif len(player_carriers) > 1:
-    raise RuntimeError("found multiple player-controlled carriers")
-else:
-    carrier_id = player_carriers[0].attrib["id"]
+    # read savegame (try relative path first, then %APPDATA% on Windows)
+    slot = input("Enter savegame folder (e.g., 'slot_0'): ").rstrip()
+    sav_file = Path(slot, "save.xml")
+    if not sav_file.exists() and os.name == "nt" and os.getenv("APPDATA"):
+        sav_file = Path(os.getenv("APPDATA"), "Carrier Command 2", "saved_games", slot, "save.xml")
+    sav = CC2Savegame(sav_file)
+    print()
 
-# iterate over quantities
-changed = False
-print("Pending inventory changes:")
-state = sav.root.find(f'vehicles/vehicle_states/v[@id="{carrier_id}"]/attrib_state')
-for item_id, item in enumerate(state.iterfind("data/inventory/item_quantities/q"), 1):
-    try:
-        if int(item.attrib["value"]) == item_ids_qtys[item_id][1]:
+    # find player team id
+    non_ai_teams = sav.root.findall('scene/teams/teams/t[@is_ai_controlled="false"]')
+    if len(non_ai_teams) == 0:
+        raise RuntimeError("found zero player-controlled teams")
+    elif len(non_ai_teams) > 1:
+        raise RuntimeError("found multiple player-controlled teams")
+    else:
+        team_id = non_ai_teams[0].attrib["id"]
+
+    # find player carrier vehicle id
+    player_carriers = sav.root.findall(f'vehicles/vehicles/v[@definition_index="0"][@team_id="{team_id}"]')
+    if len(player_carriers) == 0:
+        raise RuntimeError("found zero player-controlled carriers")
+    elif len(player_carriers) > 1:
+        raise RuntimeError("found multiple player-controlled carriers")
+    else:
+        carrier_id = player_carriers[0].attrib["id"]
+
+    # iterate over quantities
+    changed = False
+    print("Pending inventory changes:")
+    state = sav.root.find(f'vehicles/vehicle_states/v[@id="{carrier_id}"]/attrib_state')
+    for item_id, item in enumerate(state.iterfind("data/inventory/item_quantities/q"), 1):
+        try:
+            if int(item.attrib["value"]) == item_ids_qtys[item_id][1]:
+                continue
+
+            changed = True
+            print(f'{item_id:2d}: {item_ids_qtys[item_id][0]:24s}: ' +
+                  f'{int(item.attrib["value"]):5d} -> {item_ids_qtys[item_id][1]:5d}')
+            item.attrib["value"] = str(item_ids_qtys[item_id][1])
+        except KeyError:
             continue
 
-        changed = True
-        print(f'{item_id:2d}: {item_ids_qtys[item_id][0]:24s}: ' +
-              f'{int(item.attrib["value"]):5d} -> {item_ids_qtys[item_id][1]:5d}')
-        item.attrib["value"] = str(item_ids_qtys[item_id][1])
-    except KeyError:
-        continue
+    if not changed:
+        print("NONE")
+        input("Press ENTER to exit ...")
+        sys.exit(0)
 
-if not changed:
-    print("NONE")
-    input("Press ENTER to exit ...")
+    print()
+    input("Press ENTER to apply above changes or CTRL+C to abort ...")
+    sav.write()
+
+    input("Savegame modified. Press ENTER to exit ...")
     sys.exit(0)
-
-print()
-input("Press ENTER to apply above changes or CTRL+C to abort ...")
-sav.write()
-
-input("Savegame modified. Press ENTER to exit ...")
-sys.exit(0)
