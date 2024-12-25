@@ -32,7 +32,7 @@ unzip CC2_server.zip -d ~/.wine/drive_c/CC2_server
 This repository includes a default [`server_config.xml`](.wine/drive_c/CC2_server/server_config.xml).
 Edit the file to suit your needs.
 The config defaults to load a `save.xml` file placed in [`C:/CC2_server/saved_games/slot_0/`](.wine/drive_c/CC2_server/saved_games/slot_0/) if it exists.
-You can upload any `save.xml` file from your local CC2 installation.
+You can upload any `save.xml` file from your local CC2 installation (`%APPDATA%\Carrier Command 2\saved_games`).
 
 The [`modify_inventory.py`](.wine/drive_c/CC2_server/saved_games/modify_inventory.py) script can be used to change item counts in the player carrier inventory.
 Set the desired item counts by first editing the `item_ids_qtys` dictionary, then run the script on a save game of your choice (script will ask which).
@@ -56,6 +56,9 @@ Note that you may need to [`loginctl enable-linger $USERNAME`](https://manpages.
 
 ## Known Issues
 
+* Trying to connect to a dedicated server on the local host or network via the in-game server browser may fail.
+  Connect local clients via `carrier_command.exe +connect $SERVER_ADDR`.
+  [Geometa.co.uk Ticket #2254](https://geometa.co.uk/support/carriercommand/2254)
 * The dedicated server can load save games, but cannot write save games!
   All progress will be lost when the dedicated server is stopped.
   [1](https://geometa.co.uk/support/carriercommand/2227)
@@ -94,7 +97,8 @@ Output:
 
 Run server with `save_name="slot_0"` in `server_configuration.xml` and use `strace` to find file operations on paths that smell like a save game:
 ```sh
-strace -f -e trace=%file wine dedicated_server.exe >/tmp/log 2>&1 ; grep -E 'saved_games|slot_0|save.xml' /tmp/log
+strace -f -e trace=%file wine dedicated_server.exe >/tmp/log 2>&1
+grep -E 'saved_games|slot_0|save.xml' /tmp/log
 ```
 
 Output:
